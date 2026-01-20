@@ -6,6 +6,7 @@ namespace App\Controllers;
 
 use GuzzleHttp\Psr7\Utils;
 use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\ServerRequest;
 
 class HomeController
 {
@@ -17,6 +18,19 @@ class HomeController
 
         $response = $response->withBody($stream);
  
+        return $response;
+    }
+
+    public function showfunction(ServerRequest $request, array $args): Response
+    {
+        $id = $args['id'];
+
+        $stream = Utils::streamFor("Single product with ID $id");
+
+        $response = new Response();
+
+        $response = $response->withBody($stream);
+
         return $response;
     }
 }

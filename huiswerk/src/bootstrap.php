@@ -1,12 +1,14 @@
 <?php 
 
+
+
 declare(strict_types=1);
 
 use GuzzleHttp\Psr7\ServerRequest;
-use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Psr7\Utils;
 use HttpSoft\HttpEmitter\SapiEmitter;
 use League\Route\Router;
+use App\Controllers\HomeController;
+use App\Controllers\ProductController;
 
 ini_set('display_errors', '1');
 
@@ -16,43 +18,19 @@ $request = ServerRequest::fromGlobals();
 
 $route = new Router;
 
-$router->map("GET","/", function (){
+$router->get("/", [HomeController::class, "index"]);
 
-$stream = Utils::streamFor("Homepage");
+$router->get("/products", [ProductController::class, "index"]);
 
+$request = ServerRequest::fromGlobals();
+
+$router->get("/product/{id:number}",[ProductController::class, "show"]);   
 $response = new Response();
 
-$response = $response->withBody($stream);
- 
-return $response;
-});
-
-$router->get("/products", function() {
-
-    $stream = Utils::streamFor("List of products");
-
-    $response = new Response();
-
-    $response = $response->withBody($stream);
- 
-    return $response;
-});
-
-$router->get("/product/{id:number}", function($request, $args) {
-
-    $id = $args['id'];
-
-    $stream = Utils::streamFor("Single product with ID $id");
-
-    $response = new Response();
-
-    $response = $response->withBody($stream);
-
-    return $response;
-});
-
 $response = $router->dispatch($request);
+$response = $response->withStatus(418) 
+                        ->withHeader("X-Powered-By", "PHP")
+                        ->withBody($stream);
 
 $emitter = new SapiEmitter();
-
-$emitter->emit($response);
+?>
