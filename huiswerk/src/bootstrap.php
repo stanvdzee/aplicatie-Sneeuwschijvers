@@ -1,11 +1,14 @@
 <?php 
 
+
+
 declare(strict_types=1);
 
 use GuzzleHttp\Psr7\ServerRequest;
-use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Psr7\Utils;
 use HttpSoft\HttpEmitter\SapiEmitter;
+use League\Route\Router;
+use App\Controllers\HomeController;
+use App\Controllers\ProductController;
 
 ini_set('display_errors', '1');
 
@@ -13,22 +16,21 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 
 $request = ServerRequest::fromGlobals();
 
-$page = $request->getQueryParams()['page'];
+$route = new Router;
 
-ob_start();
+$router->get("/", [HomeController::class, "index"]);
 
-require dirname(__DIR__) . "/{$page}.php";
+$router->get("/products", [ProductController::class, "index"]);
 
-$content = ob_get_clean();
+$request = ServerRequest::fromGlobals();
 
-$stream = Utils::streamFor($content);
-
+$router->get("/product/{id:number}",[ProductController::class, "show"]);   
 $response = new Response();
 
-$response = $response->withStatus(418)
+$response = $router->dispatch($request);
+$response = $response->withStatus(418) 
                         ->withHeader("X-Powered-By", "PHP")
                         ->withBody($stream);
 
 $emitter = new SapiEmitter();
-
-$emitter->emit($response);
+?>
