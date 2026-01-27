@@ -1,7 +1,5 @@
 <?php 
 
-
-
 declare(strict_types=1);
 
 use GuzzleHttp\Psr7\ServerRequest;
@@ -22,15 +20,10 @@ $router->get("/", [HomeController::class, "index"]);
 
 $router->get("/products", [ProductController::class, "index"]);
 
-$request = ServerRequest::fromGlobals();
-
-$router->get("/product/{id:number}",[ProductController::class, "show"]);   
-$response = new Response();
+$router->get("/product/{id:number}",[ProductController::class, "show"]);
 
 $response = $router->dispatch($request);
-$response = $response->withStatus(418) 
-                        ->withHeader("X-Powered-By", "PHP")
-                        ->withBody($stream);
 
 $emitter = new SapiEmitter();
-?>
+
+$emitter->emit($response);

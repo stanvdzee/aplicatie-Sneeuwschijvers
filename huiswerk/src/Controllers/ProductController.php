@@ -6,11 +6,12 @@ namespace App\Controllers;
 
 use GuzzleHttp\Psr7\Utils;
 use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Psr7\ServerRequest;
+use Psr\Http\Message\ResponseInterface;
+use GuzzleHttp\Psr7\ServerRequestInterface;
 
 class HomeController
 {
-    public function index(): Response
+    public function index(): ResponseInterface
     {
         $stream = Utils::streamFor("Homepage");
 
@@ -21,7 +22,7 @@ class HomeController
         return $response;
     }
 
-    public function showfunction(ServerRequest $request, array $args): Response
+    public function showfunction(ServerRequestInterface $request, array $args): ResponseInterface
     {
         $id = $args['id'];
 
