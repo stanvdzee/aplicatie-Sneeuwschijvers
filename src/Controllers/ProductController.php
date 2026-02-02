@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use GuzzleHttp\Psr7\Utils;
 use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\ServerRequestInterface;
+use GuzzleHttp\Psr7\Utils;
 use Psr\Http\Message\ResponseInterface;
-use GuzzleHttp\Psr7\ServerRequestInterface;
 
-class HomeController
+class ProductController
 {
     public function index(): ResponseInterface
     {
-        $stream = Utils::streamFor("Homepage");
+        $stream = Utils::streamFor("List of products");
 
         $response = new Response();
 
@@ -22,13 +22,13 @@ class HomeController
         return $response;
     }
 
-    public function showfunction(ServerRequestInterface $request, array $args): ResponseInterface
+    public function show(ServerRequestInterface $request, array $args): ResponseInterface
     {
         $id = $args['id'];
 
         $stream = Utils::streamFor("Single product with ID $id");
 
-        $response = new Response();
+        $response = new Response;
 
         $response = $response->withBody($stream);
 
