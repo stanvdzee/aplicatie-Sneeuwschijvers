@@ -1,0 +1,32 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Framework\Controller;
+
+use Framework\Template\RendererInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\ResponseInterface;
+use DI\Attribute\Inject;
+
+abstract class AbstractController
+{
+    #[Inject]
+    private ResponseFactoryInterface $factory;
+
+    #[Inject]
+    private RendererInterface $renderer;
+
+    protected function render(string $template, array $data = []) : ResponseInterface
+    {
+    $contents = $this->renderer->render("$template", $data);
+
+        $stream = $this->factory->createStream($contents);
+
+        $response = $this->factory->createResponse(200);
+
+        $response = $response->withBody($stream);
+
+        return $response;
+    }
+}

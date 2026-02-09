@@ -20,10 +20,16 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 
 $request = \GuzzleHttp\Psr7\ServerRequest::fromGlobals();
 
-$container = new DI\Container([
+$builder = new DI\ContainerBuilder();
+
+$builder->addDefinitions([
     ResponseFactoryInterface::class => DI\create(HttpFactory::class),
     RendererInterface::class => DI\create(PlatesRenderer::class)
 ]);
+
+$builder->useAttributes(true);
+
+$container = $builder->build();
 
 $router = new Router;
 

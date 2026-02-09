@@ -4,33 +4,21 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use Framework\Template\Renderer;
-use Framework\Template\RendererInterface;
-use http\Encoding\Stream;
-use Psr\Http\Message\ResponseFactoryInterface;
+use Framework\Controller\AbstractController;
 use Psr\Http\Message\ResponseInterface;
 
-class HomeController
+class HomeController extends AbstractController
 {
-    public function __construct(private ResponseFactoryInterface $factory, private RendererInterface $renderer)
-    {
-    }
 
+    public function __construct (private \DateTime $dt)
+    {
+
+    }
     public function index(): ResponseInterface
     {
-
-        $contents = $this->renderer->render("home/index", [
-            "name" => "<em>peter</em>"
+        return $this->render("home/index", [
+            "name" => $this->dt->format("l"),
         ]);
 
-        $object = '<pre>' . print_r(file_get_contents("https://weerlive.nl/api/weerlive_api_v2.php?key=ff1308b93f&locatie=sneek"),true) . '</pre>';
-
-        $stream = $this->factory->createStream($object);
-
-        $response = $this->factory->createResponse(200);
-
-        $response = $response->withBody($stream);
-
-        return $response;
     }
 }

@@ -10,7 +10,7 @@ class PlatesRenderer implements RendererInterface
 {
     public function render(string $template, array $data = []): string
     {
-        $engine = new Engine(dirname(__DIR__, 3) . "/Views");
+        $engine = new Engine(dirname(__DIR__, 3) . "/views");
 
         return $engine->render($template, $data);
     }
