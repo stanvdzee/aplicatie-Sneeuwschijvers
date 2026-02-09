@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Framework\Template\RendererInterface;
 use HttpSoft\Emitter\SapiEmitter;
 use League\Route\Router;
 use App\Controllers\HomeController;
@@ -10,6 +11,8 @@ use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\ResponseFactoryInterface;
 use GuzzleHttp\Psr7\HttpFactory;
 use League\Route\Strategy\ApplicationStrategy;
+use Framework\Template\Renderer;
+use Framework\Template\PlatesRenderer;
 
 ini_set('display_errors', 1);
 
@@ -18,7 +21,8 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 $request = \GuzzleHttp\Psr7\ServerRequest::fromGlobals();
 
 $container = new DI\Container([
-    ResponseFactoryInterface::class => DI\create(HttpFactory::class)
+    ResponseFactoryInterface::class => DI\create(HttpFactory::class),
+    RendererInterface::class => DI\create(PlatesRenderer::class)
 ]);
 
 $router = new Router;
