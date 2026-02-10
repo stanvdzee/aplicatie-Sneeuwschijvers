@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+use Doctrine\DBAL\DriverManager;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\ORMSetup;
 use Framework\Template\RendererInterface;
 use HttpSoft\Emitter\SapiEmitter;
 use League\Route\Router;
@@ -24,7 +28,24 @@ $builder = new DI\ContainerBuilder();
 
 $builder->addDefinitions([
     ResponseFactoryInterface::class => DI\create(HttpFactory::class),
-    RendererInterface::class => DI\create(PlatesRenderer::class)
+    RendererInterface::class => DI\create(PlatesRenderer::class),
+    EntityManagerInterface::class => function () {
+        $paths = [dirname(__DIR__) . "/src/Entities"];
+
+        $config = ORMSetup::createAttributeMetadataConfiguration($paths, true);
+
+        $params = [
+            "driver" => "pdo_mysql",
+            "host" => "localhost",
+            "user" => "root",
+            "password" => "ServBay.dev",
+            "dbname" => "Strooi_applicatie",
+        ];
+
+        $connection = DriverManager::getConnection($params, $config);
+
+        return new EntityManager($connection, $config);
+    }
 ]);
 
 $builder->useAttributes(true);
@@ -42,6 +63,8 @@ $router->get("/", [HomeController::class, "index"]);
 $router->get("/products", [ProductController::class, "index"]);
 
 $router->get("/product/{id:number}", [ProductController::class, "show"]);
+
+$router->map(["GET", "POST"], "/products/new", [ProductController::class, "create"]);
 
 $response = $router->dispatch($request);
 
