@@ -8,6 +8,7 @@ use Framework\Template\PlatesRenderer;
 use Doctrine\ORM\EntityManagerInterface;
 use Framework\Template\RendererInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
+use GuzzleHttp\Psr7\ServerRequests;
 
 return [
     ResponseFactoryInterface::class => DI\create(HttpFactory::class),
