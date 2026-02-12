@@ -4,57 +4,59 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Entities\Product;
+use App\Entities\Weg;
 use Doctrine\ORM\EntityManagerInterface;
 use Framework\Controller\AbstractController;
 use PDO;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-
-
 class ProductController extends AbstractController
 {
     public function __construct(private EntityManagerInterface $em)
-{
-}
+    {
+
+    }
 
     public function index(): ResponseInterface
     {
-       $repo = $this->em->getRepository(Product::class);
 
-       $products = $repo->findAll();
+        $repo = $this->em->getRepository(Weg::class);
 
-        return $this->render('product/index',[
+        $products = $repo->findAll();
+
+        return $this->render("product/index", [
             'products' => $products
         ]);
 
     }
     public function show(ServerRequestInterface $request,array $args): ResponseInterface
     {
-       $product = $this->em->find(Product::class, $args["id"]);
+        $product = $this->em->find(Weg::class, $args["id"]);
 
-         return $this->render("product/show", [
-             'product' => $product
+        return $this->render("product/show", [
+            "product" => $product
         ]);
+
     }
-    public function create(ServerRequestInterface $request,array $args): ResponseInterface
+
+    public function create(ServerRequestInterface $request): ResponseInterface
     {
         if ($request->getMethod() === "POST") {
 
             $parameters = $request->getParsedBody();
 
-            $product = new Product();
+            $product = new Weg;
 
             $product->setName($parameters["name"]);
             $product->setDescription($parameters["description"]);
-            $product->setSize((int)$parameters["size"]);
+            $product->setSize(($parameters["size"]));
+            $product->setLocation($parameters["location"]);
 
             $this->em->persist($product);
 
             $this->em->flush();
 
             return $this->redirect("/product/{$product->getId()}");
-
         }
 
         return $this->render("product/new");

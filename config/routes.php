@@ -8,10 +8,10 @@ return function (Router $router) {
 
     $router->get("/", [HomeController::class, "index"]);
 
-    $router->get("/products", [ProductController::class, "index"]);
+    $router->get("/strooiplan", [ProductController::class, "index"]);
 
-    $router->get("/product/{id:number}", [ProductController::class, "show"]);
+    $router->get("/strooiplan/{id:number}", [ProductController::class, "show"]);
 
-    $router->map(["GET", "POST"], "/products/new", [ProductController::class, "create"]);
+    $router->map(["GET", "POST"], "/product/new", [ProductController::class, "create"]);
 
 };

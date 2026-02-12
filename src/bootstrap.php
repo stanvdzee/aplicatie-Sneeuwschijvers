@@ -2,17 +2,16 @@
 
 declare(strict_types=1);
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Dotenv\Dotenv;
 use HttpSoft\Emitter\SapiEmitter;
 use League\Route\Router;
 use League\Route\Strategy\ApplicationStrategy;
-use GuzzleHttp\Psr7\ServerRequest;
+use League\Route\Http\Exception\NotFoundException;
 
 define("APP_ROOT", dirname(__DIR__));
 
 require APP_ROOT . '/vendor/autoload.php';
-
-$request = ServerRequest::fromGlobals();
 
 $dotenv = Dotenv::createImmutable(APP_ROOT);
 $dotenv->load();
@@ -23,9 +22,11 @@ require $env === "dev"
     ? APP_ROOT . "/config/errors_dev.php"
     : APP_ROOT . "/config/errors_prod.php";
 
-$builder = new DI\ContainerBuilder();
+$request = ServerRequest::fromGlobals();
 
-$builder->addDefinitions(APP_ROOT . "/config/container.php");
+$builder = new DI\ContainerBuilder;
+
+$builder->addDefinitions(APP_ROOT . "/config/definitions.php");
 
 $builder->useAttributes(true);
 
@@ -37,27 +38,23 @@ $strategy = new ApplicationStrategy;
 $strategy->setContainer($container);
 $router->setStrategy($strategy);
 
-$routes = require APP_ROOT . "/config/routes.php";
+$routes = require APP_ROOT . '/config/routes.php';
 $routes($router);
 
 try {
-
     $response = $router->dispatch($request);
-} catch (NotFoundException $e) {
+}   catch (NotFoundException $e) {
 
     http_response_code(404);
 
     if ($env === "dev") {
-
         throw $e;
-
     } else {
 
-        require APP_ROOT . "/views/404.php";
+        require APP_ROOT . "/views/404.html";
         exit;
     }
 }
-
 $emitter = new SapiEmitter;
 
 $emitter->emit($response);
